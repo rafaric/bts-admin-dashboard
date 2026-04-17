@@ -5,13 +5,13 @@ export const BTS_MEMBERS = [
 export type BtsMember = (typeof BTS_MEMBERS)[number];
 
 export const MEMBER_COLORS: Record<BtsMember, string> = {
-  RM:       "#7c4dce",
-  Jin:      "#e879a0",
-  Suga:     "#60a5fa",
-  "J-Hope": "#fbbf24",
-  Jimin:    "#f97316",
-  V:        "#4ade80",
-  Jungkook: "#a78bfa",
+  RM:       "#9E9E9E",
+  Jin:      "#EC407A",
+  Suga:     "#616161",
+  "J-Hope": "#AEEA00",
+  Jimin:    "#FFD600",
+  V:        "#7C3AED",
+  Jungkook: "#EF5350",
 };
 
 export const BTS_ERAS = [
