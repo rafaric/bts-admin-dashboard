@@ -20,7 +20,7 @@ export default function ContentPage() {
 
   const filtered = (posts as Post[]).filter((p) => {
     const matchSearch = p.content.toLowerCase().includes(search.toLowerCase())
-      || (p.author?.username ?? "").toLowerCase().includes(search.toLowerCase());
+      || (p.author?.name ?? "").toLowerCase().includes(search.toLowerCase());
     const matchMember = memberFilter === "all" || (p.tagged_members ?? []).includes(memberFilter);
     const matchEra    = eraFilter    === "all" || p.era === eraFilter;
     return matchSearch && matchMember && matchEra;
@@ -91,14 +91,14 @@ export default function ContentPage() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1 min-w-0">
                   <div className="relative w-9 h-9 rounded-full overflow-hidden shrink-0 bg-[color:var(--bg-surface)]">
-                    {post.author?.avatar_url && (
-                      <Image src={post.author.avatar_url} alt={post.author.username ?? ""} fill className="object-cover" sizes="36px" />
+                    {post.author?.avatar && (
+                      <Image src={post.author.avatar} alt={post.author.name ?? ""} fill className="object-cover" sizes="36px" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-medium text-[color:var(--text-primary)]">
-                        @{post.author?.username}
+                        {post.author?.name ?? "—"}
                       </span>
                       {post.era && <span className="badge badge-info">{post.era}</span>}
                       {(post.tagged_members ?? []).map((m) => (

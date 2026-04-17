@@ -19,7 +19,7 @@ export async function requireAdmin(): Promise<
   const db = createSupabaseAdmin();
   const { data: profile } = await db
     .from("profiles")
-    .select("id, username, is_admin")
+    .select("id, name, is_admin")
     .eq("id", user.id)
     .single();
 
@@ -27,5 +27,5 @@ export async function requireAdmin(): Promise<
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  return { adminId: profile.id, adminUsername: profile.username };
+  return { adminId: profile.id, adminUsername: profile.name ?? user.email ?? profile.id };
 }

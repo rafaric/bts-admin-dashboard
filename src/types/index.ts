@@ -2,18 +2,21 @@ export type { BtsMember } from "@/lib/constants";
 
 export type AdminUser = {
   id: string;
-  username: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  bio: string | null;
+  name: string | null;
+  avatar: string | null;
+  cover: string | null;
+  about: string | null;
   army_since: string | null;
-  favorite_member: string | null;
+  bias: string | null;
+  bias_wrecker: string | null;
+  fav_song: string | null;
+  fav_album: string | null;
   is_admin: boolean;
   is_banned: boolean;
-  created_at: string;
-  /** Derived from auth.users — not in profiles table directly */
+  /** Derived from auth.users */
   last_sign_in_at?: string | null;
   email?: string | null;
+  created_at?: string;
 };
 
 export type Post = {
@@ -25,7 +28,7 @@ export type Post = {
   era: string | null;
   created_at: string;
   /** Joined */
-  author?: Pick<AdminUser, "id" | "username" | "avatar_url">;
+  author?: { id: string; name: string | null; avatar: string | null };
   likes_count?: number;
 };
 

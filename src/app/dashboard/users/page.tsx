@@ -15,7 +15,9 @@ function UserRow({
   onDelete: (id: string) => void;
   isDemo: boolean;
 }) {
-  const joinDate = new Date(user.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" });
+  const joinDate = user.created_at
+    ? new Date(user.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })
+    : "—";
   const lastSeen = user.last_sign_in_at
     ? new Date(user.last_sign_in_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short" })
     : "—";
@@ -25,17 +27,17 @@ function UserRow({
       <td>
         <div className="flex items-center gap-3">
           <div className="relative w-8 h-8 rounded-full overflow-hidden shrink-0 bg-[color:var(--bg-surface)]">
-            {user.avatar_url && (
-              <Image src={user.avatar_url} alt={user.username} fill className="object-cover" sizes="32px" />
+            {user.avatar && (
+              <Image src={user.avatar} alt={user.name ?? "usuario"} fill className="object-cover" sizes="32px" />
             )}
           </div>
           <div>
-            <p className="font-medium text-[color:var(--text-primary)] text-sm">@{user.username}</p>
+            <p className="font-medium text-[color:var(--text-primary)] text-sm">{user.name ?? "—"}</p>
             <p className="text-xs text-[color:var(--text-muted)]">{user.email ?? "—"}</p>
           </div>
         </div>
       </td>
-      <td>{user.favorite_member ?? "—"}</td>
+      <td>{user.bias ?? "—"}</td>
       <td>{joinDate}</td>
       <td>{lastSeen}</td>
       <td>
@@ -89,7 +91,7 @@ export default function UsersPage() {
   const [filter, setFilter] = useState<"all" | "active" | "banned">("all");
 
   const filtered = users.filter((u: AdminUser) => {
-    const matchSearch = u.username.toLowerCase().includes(search.toLowerCase())
+    const matchSearch = (u.name ?? "").toLowerCase().includes(search.toLowerCase())
       || (u.email ?? "").toLowerCase().includes(search.toLowerCase());
     const matchFilter =
       filter === "all"    ? true :
@@ -139,7 +141,7 @@ export default function UsersPage() {
           <thead>
             <tr>
               <th>Usuario</th>
-              <th>Bias</th>
+              <th>Bias/Nombre</th>
               <th>Registro</th>
               <th>Último acceso</th>
               <th>Estado</th>

@@ -12,7 +12,7 @@ export async function GET() {
     .from("posts")
     .select(`
       id, user_id, content, image_url, tagged_members, era, created_at,
-      profiles:user_id ( id, username, avatar_url ),
+      profiles:user_id ( id, name, avatar ),
       likes:likes(count)
     `)
     .order("created_at", { ascending: false })

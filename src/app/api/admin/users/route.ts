@@ -10,8 +10,8 @@ export async function GET() {
 
   const { data: profiles, error } = await db
     .from("profiles")
-    .select("id, username, full_name, avatar_url, bio, army_since, favorite_member, is_admin, is_banned, created_at")
-    .order("created_at", { ascending: false });
+    .select("id, name, avatar, cover, about, army_since, bias, bias_wrecker, fav_song, fav_album, is_admin, is_banned")
+    .order("id", { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

@@ -42,8 +42,7 @@ export async function DELETE(
   const { id } = await params;
   const db = createSupabaseAdmin();
 
-  // Get username before deleting for audit trail
-  const { data: profile } = await db.from("profiles").select("username").eq("id", id).single();
+  const { data: profile } = await db.from("profiles").select("name").eq("id", id).single();
 
   const { error } = await db.auth.admin.deleteUser(id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -53,7 +52,7 @@ export async function DELETE(
     admin_username: guard.adminUsername,
     action:         "ban_user",
     target_id:      id,
-    target_label:   profile?.username ?? id,
+    target_label:   profile?.name ?? id,
     metadata:       { deleted: true },
   });
 
