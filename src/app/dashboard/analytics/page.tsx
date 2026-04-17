@@ -2,11 +2,11 @@
 
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-  PieChart, Pie, Cell, Legend, LineChart, Line,
+  PieChart, Pie, Cell, Legend, LineChart, Line, LabelList,
 } from "recharts";
 import { useAnalytics } from "@/hooks/useAdminData";
 import { useAuthStore } from "@/store/useAuthStore";
-import { MEMBER_COLORS, type BtsMember } from "@/lib/constants";
+import { MEMBER_COLORS, ERA_COLORS, type BtsMember, type BtsEra } from "@/lib/constants";
 
 const TOOLTIP_STYLE = {
   contentStyle: {
@@ -104,7 +104,11 @@ export default function AnalyticsPage() {
                 <XAxis type="number" tick={{ fill: "var(--text-muted)", fontSize: 10 }} />
                 <YAxis type="category" dataKey="era" tick={{ fill: "var(--text-muted)", fontSize: 10 }} width={100} />
                 <Tooltip {...TOOLTIP_STYLE} />
-                <Bar dataKey="posts" name="Posts" fill="var(--accent)" radius={[0, 3, 3, 0]} />
+                <Bar dataKey="posts" name="Posts" radius={[0, 3, 3, 0]}>
+                  {[...eras].sort((a, b) => b.posts - a.posts).map((e) => (
+                    <Cell key={e.era} fill={ERA_COLORS[e.era as BtsEra] ?? "var(--accent)"} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           )}

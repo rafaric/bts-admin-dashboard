@@ -14,6 +14,17 @@ export const MEMBER_COLORS: Record<BtsMember, string> = {
   Jungkook: "#EF5350",
 };
 
+/** Maps DB-stored lowercase keys (e.g. "rm", "jhope") to display names */
+export const MEMBER_KEY_TO_NAME: Record<string, BtsMember> = {
+  rm:       "RM",
+  jin:      "Jin",
+  suga:     "Suga",
+  jhope:    "J-Hope",
+  jimin:    "Jimin",
+  v:        "V",
+  jungkook: "Jungkook",
+};
+
 export const BTS_ERAS = [
   "2 Cool 4 Skool",
   "화양연화",
@@ -25,6 +36,20 @@ export const BTS_ERAS = [
   "Proof",
   "Arirang",
 ] as const;
+
+export type BtsEra = (typeof BTS_ERAS)[number];
+
+export const ERA_COLORS: Record<BtsEra, string> = {
+  "2 Cool 4 Skool": "#64B5F6",
+  "화양연화":        "#81C784",
+  "Wings":          "#CE93D8",
+  "Love Yourself":  "#F48FB1",
+  "Map of the Soul":"#FFB74D",
+  "BE":             "#4DB6AC",
+  "Butter":         "#FFF176",
+  "Proof":          "#A1887F",
+  "Arirang":        "#7C3AED",
+};
 
 /** ISO date of the demo seed — audit/cleanup pivot */
 export const DEMO_SEED_DATE = "2026-04-17T00:00:00.000Z";

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-guard";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
+import { MEMBER_KEY_TO_NAME } from "@/lib/constants";
 
 export async function GET() {
   const guard = await requireAdmin();
@@ -44,11 +45,12 @@ export async function GET() {
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([date, v]) => ({ date, ...v }));
 
-  // Member stats
+  // Member stats — normalize DB keys (e.g. "jhope") to display names (e.g. "J-Hope")
   const memberMap = new Map<string, number>();
   postsRaw.data?.forEach((p: { created_at: string; bts_members: string[] | null; era: string | null }) => {
     (p.bts_members ?? []).forEach((m: string) => {
-      memberMap.set(m, (memberMap.get(m) ?? 0) + 1);
+      const name = MEMBER_KEY_TO_NAME[m] ?? m;
+      memberMap.set(name, (memberMap.get(name) ?? 0) + 1);
     });
   });
 
