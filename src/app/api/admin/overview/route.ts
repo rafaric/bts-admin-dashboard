@@ -15,7 +15,7 @@ export async function GET() {
     db.from("posts").select("id", { count: "exact", head: true }),
     db.from("profiles").select("id", { count: "exact", head: true }).eq("is_banned", true),
     db.from("posts")
-      .select("author", { count: "exact", head: true })
+      .select("author")
       .gte("created_at", new Date(Date.now() - 86_400_000).toISOString()),
     db.from("posts")
       .select("id", { count: "exact", head: true })
@@ -27,9 +27,11 @@ export async function GET() {
     db.from("poll_votes").select("id", { count: "exact", head: true }),
   ]);
 
+  const activeUsersToday = new Set((activePosts.data ?? []).map((p: { author: string }) => p.author)).size;
+
   return NextResponse.json({
-    total_users:         users.count       ?? 0,
-    active_users_today:  activePosts.count ?? 0,
+    total_users:         users.count    ?? 0,
+    active_users_today:  activeUsersToday,
     total_posts:         posts.count       ?? 0,
     posts_today:         postsToday.count  ?? 0,
     banned_users:        banned.count      ?? 0,
