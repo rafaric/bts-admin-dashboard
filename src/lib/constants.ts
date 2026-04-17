@@ -48,7 +48,7 @@ export const ERA_COLORS: Record<BtsEra, string> = {
   "BE":             "#4DB6AC",
   "Butter":         "#FFF176",
   "Proof":          "#A1887F",
-  "Arirang":        "#7C3AED",
+  "Arirang":        "#EF5350",
 };
 
 /** ISO date of the demo seed — audit/cleanup pivot */
