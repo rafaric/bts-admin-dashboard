@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-guard";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
-import { MEMBER_KEY_TO_NAME } from "@/lib/constants";
+import { MEMBER_KEY_TO_NAME, ERA_KEY_TO_LABEL } from "@/lib/constants";
 
 export async function GET() {
   const guard = await requireAdmin();
@@ -54,10 +54,13 @@ export async function GET() {
     });
   });
 
-  // Era stats
+  // Era stats — normalize DB keys (e.g. "hyyh") to display labels (e.g. "화양연화")
   const eraMap = new Map<string, number>();
   postsRaw.data?.forEach((p: { created_at: string; bts_members: string[] | null; era: string | null }) => {
-    if (p.era) eraMap.set(p.era, (eraMap.get(p.era) ?? 0) + 1);
+    if (p.era) {
+      const label = ERA_KEY_TO_LABEL[p.era] ?? p.era;
+      eraMap.set(label, (eraMap.get(label) ?? 0) + 1);
+    }
   });
 
   return NextResponse.json({

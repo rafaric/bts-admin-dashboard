@@ -39,16 +39,29 @@ export const BTS_ERAS = [
 
 export type BtsEra = (typeof BTS_ERAS)[number];
 
+/** Maps DB-stored era keys to display labels */
+export const ERA_KEY_TO_LABEL: Record<string, BtsEra> = {
+  "2cool4skool": "2 Cool 4 Skool",
+  "hyyh":        "화양연화",
+  "wings":       "Wings",
+  "love_yourself":"Love Yourself",
+  "mots":        "Map of the Soul",
+  "be":          "BE",
+  "butter":      "Butter",
+  "proof":       "Proof",
+  "arirang":     "Arirang",
+};
+
 export const ERA_COLORS: Record<BtsEra, string> = {
-  "2 Cool 4 Skool": "#64B5F6",
-  "화양연화":        "#81C784",
-  "Wings":          "#CE93D8",
-  "Love Yourself":  "#F48FB1",
-  "Map of the Soul":"#FFB74D",
-  "BE":             "#4DB6AC",
-  "Butter":         "#FFF176",
-  "Proof":          "#A1887F",
-  "Arirang":        "#EF5350",
+  "2 Cool 4 Skool": "#e8b86d",
+  "화양연화":        "#ff8c69",
+  "Wings":          "#9b6fe8",
+  "Love Yourself":  "#f06292",
+  "Map of the Soul":"#4fc3f7",
+  "BE":             "#a5d6a7",
+  "Butter":         "#f9d342",
+  "Proof":          "#c9a84c",
+  "Arirang":        "#cc2936",
 };
 
 /** ISO date of the demo seed — audit/cleanup pivot */
