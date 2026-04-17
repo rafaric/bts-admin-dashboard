@@ -1,26 +1,234 @@
 @import "tailwindcss";
 
+/* ── Design tokens (Army — purple) ──────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-deep:           #070b16;
+  --bg-surface:        #0d1526;
+  --glass-bg:          rgba(13, 21, 38, 0.6);
+  --glass-border:      rgba(124, 77, 206, 0.25);
+  --glass-blur:        16px;
+
+  --accent:            #7c4dce;
+  --accent-hover:      #9b6fe8;
+  --accent-glow:       rgba(124, 77, 206, 0.45);
+  --accent-gold:       #c9a84c;
+  --accent-gold-glow:  rgba(201, 168, 76, 0.35);
+
+  --text-primary:      #f0eeff;
+  --text-secondary:    #9d8fcb;
+  --text-muted:        #8878c0;
+
+  --radius-card:       1rem;
+  --shadow-card:       0 4px 32px rgba(124, 77, 206, 0.15);
+  --shadow-card-hover: 0 8px 48px rgba(124, 77, 206, 0.3);
+
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-danger:  #f87171;
+  --color-info:    #60a5fa;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Tailwind theme extensions ─────────────────────────────────────────── */
+@theme {
+  --color-army-bg:        var(--bg-deep);
+  --color-army-surface:   var(--bg-surface);
+  --color-army-accent:    var(--accent);
+  --color-army-gold:      var(--accent-gold);
+  --color-army-text:      var(--text-primary);
+  --color-army-muted:     var(--text-muted);
+  --color-army-secondary: var(--text-secondary);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Base ────────────────────────────────────────────────────────────────── */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--bg-surface);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
+  min-height: 100dvh;
+  overflow-x: hidden;
 }
+
+/* ── Aurora background ──────────────────────────────────────────────────── */
+.aurora-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(124,77,206,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(19,13,46,0.8)   0%, transparent 60%),
+    radial-gradient(ellipse 100% 60% at 50% 50%,rgba(10,26,31,0.6)   0%, transparent 70%),
+    var(--bg-deep);
+  animation: aurora-shift 18s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-shift {
+  0%   { filter: hue-rotate(0deg)   brightness(1);    }
+  33%  { filter: hue-rotate(15deg)  brightness(1.05); }
+  66%  { filter: hue-rotate(-10deg) brightness(0.97); }
+  100% { filter: hue-rotate(8deg)   brightness(1.02); }
+}
+
+/* ── Glass card ─────────────────────────────────────────────────────────── */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.glass-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: rgba(124, 77, 206, 0.45);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.btn-accent {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.4rem;
+  font-weight: 600;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.btn-accent:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 0 24px var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+.btn-accent:active { transform: translateY(0); }
+
+.btn-danger {
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--color-danger);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.4rem 1rem;
+  font-weight: 600;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-danger:hover {
+  background: rgba(248, 113, 113, 0.22);
+  box-shadow: 0 0 12px rgba(248, 113, 113, 0.25);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.5rem;
+  padding: 0.4rem 1rem;
+  font-weight: 500;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+/* ── Input ──────────────────────────────────────────────────────────────── */
+.army-input {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+
+.army-input::placeholder { color: var(--text-muted); }
+
+.army-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* ── Table ──────────────────────────────────────────────────────────────── */
+.army-table { width: 100%; border-collapse: collapse; }
+
+.army-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.army-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid rgba(124, 77, 206, 0.08);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.army-table tbody tr:hover td {
+  background: rgba(124, 77, 206, 0.05);
+  color: var(--text-primary);
+}
+
+/* ── Status badge ───────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.badge-success { background: rgba(74,222,128,0.12);  color: var(--color-success); }
+.badge-danger  { background: rgba(248,113,113,0.12); color: var(--color-danger);  }
+.badge-warning { background: rgba(251,191,36,0.12);  color: var(--color-warning); }
+.badge-info    { background: rgba(96,165,250,0.12);  color: var(--color-info);    }
+
+/* ── Skeleton ───────────────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(124,77,206,0.08) 25%,
+    rgba(124,77,206,0.15) 50%,
+    rgba(124,77,206,0.08) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 0.375rem;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Nav active ─────────────────────────────────────────────────────────── */
+.nav-active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+/* ── Gold text ──────────────────────────────────────────────────────────── */
+.text-gold {
+  color: var(--accent-gold);
+  text-shadow: 0 0 12px var(--accent-gold-glow);
+}
+
+/* ── Custom scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-surface); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
