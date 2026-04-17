@@ -6,6 +6,7 @@ import {
 } from "recharts";
 import { useAnalytics } from "@/hooks/useAdminData";
 import { useAuthStore } from "@/store/useAuthStore";
+import { MEMBER_COLORS, type BtsMember } from "@/lib/constants";
 
 const TOOLTIP_STYLE = {
   contentStyle: {
@@ -84,7 +85,7 @@ export default function AnalyticsPage() {
             <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Pie data={members} dataKey="posts" nameKey="member" cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={3}>
-                  {members.map((m) => <Cell key={m.member} fill={m.color} />)}
+                  {members.map((m) => <Cell key={m.member} fill={MEMBER_COLORS[m.member as BtsMember] ?? "var(--accent)"} />)}
                 </Pie>
                 <Tooltip {...TOOLTIP_STYLE} />
                 <Legend wrapperStyle={{ fontSize: 11 }} formatter={(v) => <span style={{ color: "var(--text-secondary)" }}>{v}</span>} />

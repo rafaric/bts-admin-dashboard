@@ -2,6 +2,7 @@
 
 import { useAuthStore } from "@/store/useAuthStore";
 import { useOverview, useAnalytics } from "@/hooks/useAdminData";
+import { MEMBER_COLORS, type BtsMember } from "@/lib/constants";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from "recharts";
@@ -127,7 +128,7 @@ export default function OverviewPage() {
                     <div className="flex-1 bg-white/5 rounded-full h-2 overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-700"
-                        style={{ width: `${Math.round((m.posts / max) * 100)}%`, background: m.color }}
+                        style={{ width: `${Math.round((m.posts / max) * 100)}%`, background: MEMBER_COLORS[m.member as BtsMember] ?? "var(--accent)" }}
                       />
                     </div>
                     <span className="text-xs font-medium text-[color:var(--text-muted)] w-8 text-right">{m.posts}</span>
