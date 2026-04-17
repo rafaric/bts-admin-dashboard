@@ -21,14 +21,17 @@ export type AdminUser = {
 
 export type Post = {
   id: string;
-  user_id: string;
+  author: string;
   content: string;
-  image_url: string | null;
-  tagged_members: string[];
-  era: string | null;
   created_at: string;
-  /** Joined */
-  author?: { id: string; name: string | null; avatar: string | null };
+  era: string | null;
+  now_playing: string | null;
+  bts_members: string[] | null;
+  photos: { id: string; tipo: string; url: string }[] | null;
+  tagged: { label: string; value: string }[] | null;
+  parent: string | null;
+  /** Joined via profiles:author */
+  profiles?: { id: string; name: string; avatar: string } | null;
   likes_count?: number;
 };
 

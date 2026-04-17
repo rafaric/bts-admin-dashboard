@@ -11,9 +11,9 @@ export async function GET() {
   const { data, error } = await db
     .from("posts")
     .select(`
-      id, user_id, content, image_url, tagged_members, era, created_at,
-      profiles:user_id ( id, name, avatar ),
-      likes:likes(count)
+      id, author, content, created_at, era, now_playing, bts_members, photos, tagged, parent,
+      profiles:author ( id, name, avatar ),
+      likes(count)
     `)
     .order("created_at", { ascending: false })
     .limit(100);
@@ -22,7 +22,6 @@ export async function GET() {
 
   const posts = data?.map((p: Record<string, unknown>) => ({
     ...p,
-    author:      Array.isArray(p.profiles) ? p.profiles[0] : p.profiles,
     likes_count: Array.isArray(p.likes) ? (p.likes[0] as { count: number })?.count ?? 0 : 0,
   }));
 

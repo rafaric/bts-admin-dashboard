@@ -20,8 +20,8 @@ export default function ContentPage() {
 
   const filtered = (posts as Post[]).filter((p) => {
     const matchSearch = p.content.toLowerCase().includes(search.toLowerCase())
-      || (p.author?.name ?? "").toLowerCase().includes(search.toLowerCase());
-    const matchMember = memberFilter === "all" || (p.tagged_members ?? []).includes(memberFilter);
+      || (p.profiles?.name ?? "").toLowerCase().includes(search.toLowerCase());
+    const matchMember = memberFilter === "all" || (p.bts_members ?? []).includes(memberFilter);
     const matchEra    = eraFilter    === "all" || p.era === eraFilter;
     return matchSearch && matchMember && matchEra;
   });
@@ -91,17 +91,17 @@ export default function ContentPage() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1 min-w-0">
                   <div className="relative w-9 h-9 rounded-full overflow-hidden shrink-0 bg-[color:var(--bg-surface)]">
-                    {post.author?.avatar && (
-                      <Image src={post.author.avatar} alt={post.author.name ?? ""} fill className="object-cover" sizes="36px" />
+                    {post.profiles?.avatar && (
+                      <Image src={post.profiles.avatar} alt={post.profiles.name ?? ""} fill className="object-cover" sizes="36px" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-medium text-[color:var(--text-primary)]">
-                        {post.author?.name ?? "—"}
+                        {post.profiles?.name ?? "—"}
                       </span>
                       {post.era && <span className="badge badge-info">{post.era}</span>}
-                      {(post.tagged_members ?? []).map((m) => (
+                      {(post.bts_members ?? []).map((m) => (
                         <span
                           key={m}
                           className="badge"

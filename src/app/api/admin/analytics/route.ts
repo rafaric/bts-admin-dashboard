@@ -10,7 +10,7 @@ export async function GET() {
   const since = new Date(Date.now() - 30 * 86_400_000).toISOString();
 
   const [postsRaw, usersRaw, likesRaw] = await Promise.all([
-    db.from("posts").select("created_at, tagged_members, era").gte("created_at", since),
+    db.from("posts").select("created_at, bts_members, era").gte("created_at", since),
     db.from("profiles").select("created_at").gte("created_at", since),
     db.from("likes").select("created_at").gte("created_at", since),
   ]);
@@ -25,7 +25,7 @@ export async function GET() {
     return dailyMap.get(date)!;
   }
 
-  postsRaw.data?.forEach((p: { created_at: string; tagged_members: string[] | null; era: string | null }) => {
+  postsRaw.data?.forEach((p: { created_at: string; bts_members: string[] | null; era: string | null }) => {
     const d = p.created_at.slice(0, 10);
     getOrCreate(d).new_posts++;
   });
@@ -46,15 +46,15 @@ export async function GET() {
 
   // Member stats
   const memberMap = new Map<string, number>();
-  postsRaw.data?.forEach((p: { created_at: string; tagged_members: string[] | null; era: string | null }) => {
-    (p.tagged_members ?? []).forEach((m: string) => {
+  postsRaw.data?.forEach((p: { created_at: string; bts_members: string[] | null; era: string | null }) => {
+    (p.bts_members ?? []).forEach((m: string) => {
       memberMap.set(m, (memberMap.get(m) ?? 0) + 1);
     });
   });
 
   // Era stats
   const eraMap = new Map<string, number>();
-  postsRaw.data?.forEach((p: { created_at: string; tagged_members: string[] | null; era: string | null }) => {
+  postsRaw.data?.forEach((p: { created_at: string; bts_members: string[] | null; era: string | null }) => {
     if (p.era) eraMap.set(p.era, (eraMap.get(p.era) ?? 0) + 1);
   });
 
