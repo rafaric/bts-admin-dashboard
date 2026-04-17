@@ -73,6 +73,14 @@ export type EraStat = {
   posts: number;
 };
 
+export type PollStat = {
+  id: string;
+  question: string;
+  ends_at: string | null;
+  votes: number;
+  active: boolean;
+};
+
 export type OverviewStats = {
   total_users: number;
   active_users_today: number;
@@ -80,4 +88,6 @@ export type OverviewStats = {
   posts_today: number;
   banned_users: number;
   avg_session_minutes: number;
+  active_polls: number;
+  total_votes: number;
 };

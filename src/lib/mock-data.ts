@@ -5,6 +5,7 @@ import type {
   DailyMetric,
   MemberStat,
   EraStat,
+  PollStat,
   OverviewStats,
 } from "@/types";
 import { MEMBER_COLORS } from "./constants";
@@ -90,6 +91,15 @@ export const MOCK_ERA_STATS: EraStat[] = [
   { era: "2 Cool 4 Skool",  posts: 15  },
 ];
 
+/* ── Poll stats ─────────────────────────────────────────────────────────── */
+export const MOCK_POLL_STATS: PollStat[] = [
+  { id: "poll1", question: "¿Cuál es tu era favorita de BTS?",          ends_at: "2026-04-24T00:00:00Z", votes: 34, active: true  },
+  { id: "poll2", question: "¿Qué miembro tiene el mejor solo album?",   ends_at: "2026-04-22T00:00:00Z", votes: 28, active: true  },
+  { id: "poll3", question: "¿Cuál es tu canción favorita de Arirang?",  ends_at: "2026-04-20T00:00:00Z", votes: 15, active: true  },
+  { id: "poll4", question: "¿Mejor comeback de BTS en el extranjero?",  ends_at: "2026-04-19T00:00:00Z", votes: 10, active: true  },
+  { id: "poll5", question: "¿Qué álbum te marcó más?",                  ends_at: "2026-04-10T00:00:00Z", votes: 42, active: false },
+];
+
 /* ── Overview KPIs ──────────────────────────────────────────────────────── */
 export const MOCK_OVERVIEW: OverviewStats = {
   total_users:          15,
@@ -98,4 +108,6 @@ export const MOCK_OVERVIEW: OverviewStats = {
   posts_today:          12,
   banned_users:         2,
   avg_session_minutes:  24,
+  active_polls:         4,
+  total_votes:          87,
 };

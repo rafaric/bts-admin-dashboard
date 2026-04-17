@@ -8,7 +8,9 @@ export async function GET() {
 
   const db = createSupabaseAdmin();
 
-  const [users, posts, banned, activePosts, postsToday] = await Promise.all([
+  const now = new Date().toISOString();
+
+  const [users, posts, banned, activePosts, postsToday, activePolls, totalVotes] = await Promise.all([
     db.from("profiles").select("id", { count: "exact", head: true }),
     db.from("posts").select("id", { count: "exact", head: true }),
     db.from("profiles").select("id", { count: "exact", head: true }).eq("is_banned", true),
@@ -18,14 +20,21 @@ export async function GET() {
     db.from("posts")
       .select("id", { count: "exact", head: true })
       .gte("created_at", new Date().toISOString().slice(0, 10)),
+    db.from("posts")
+      .select("id", { count: "exact", head: true })
+      .not("poll", "is", null)
+      .gt("poll->>ends_at", now),
+    db.from("poll_votes").select("id", { count: "exact", head: true }),
   ]);
 
   return NextResponse.json({
-    total_users:         users.count    ?? 0,
+    total_users:         users.count       ?? 0,
     active_users_today:  activePosts.count ?? 0,
-    total_posts:         posts.count    ?? 0,
+    total_posts:         posts.count       ?? 0,
     posts_today:         postsToday.count  ?? 0,
-    banned_users:        banned.count   ?? 0,
+    banned_users:        banned.count      ?? 0,
     avg_session_minutes: 0,
+    active_polls:        activePolls.count ?? 0,
+    total_votes:         totalVotes.count  ?? 0,
   });
 }

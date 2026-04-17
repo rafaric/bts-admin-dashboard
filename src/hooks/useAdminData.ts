@@ -10,10 +10,11 @@ import {
   MOCK_DAILY_METRICS,
   MOCK_MEMBER_STATS,
   MOCK_ERA_STATS,
+  MOCK_POLL_STATS,
 } from "@/lib/mock-data";
 import { MEMBER_COLORS } from "@/lib/constants";
 import type { BtsMember } from "@/lib/constants";
-import type { AdminUser, Post, AuditLog, OverviewStats, DailyMetric, MemberStat, EraStat } from "@/types";
+import type { AdminUser, Post, AuditLog, OverviewStats, DailyMetric, MemberStat, EraStat, PollStat } from "@/types";
 
 async function apiFetch<T>(path: string): Promise<T> {
   const res = await fetch(path);
@@ -87,7 +88,7 @@ export function useDeletePost() {
   });
 }
 
-type AnalyticsData = { daily: DailyMetric[]; members: MemberStat[]; eras: EraStat[] };
+type AnalyticsData = { daily: DailyMetric[]; members: MemberStat[]; eras: EraStat[]; polls: PollStat[] };
 
 /* ── Analytics ───────────────────────────────────────────────────────────── */
 export function useAnalytics() {
@@ -100,6 +101,7 @@ export function useAnalytics() {
             daily:   { date: string; new_posts: number; new_users: number; interactions: number; logins: number }[];
             members: { member: string; posts: number }[];
             eras:    { era: string; posts: number }[];
+            polls:   PollStat[];
           }>("/api/admin/analytics");
           return {
             daily:   data.daily,
@@ -107,13 +109,15 @@ export function useAnalytics() {
               ...m,
               color: MEMBER_COLORS[m.member as BtsMember] ?? "var(--accent)",
             })),
-            eras: data.eras,
+            eras:  data.eras,
+            polls: data.polls ?? [],
           };
         }
       : () => Promise.resolve({
           daily:   MOCK_DAILY_METRICS,
           members: MOCK_MEMBER_STATS,
           eras:    MOCK_ERA_STATS,
+          polls:   MOCK_POLL_STATS,
         }),
   });
 }

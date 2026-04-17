@@ -25,6 +25,7 @@ export default function AnalyticsPage() {
   const daily   = data?.daily   ?? [];
   const members = data?.members ?? [];
   const eras    = data?.eras    ?? [];
+  const polls   = data?.polls   ?? [];
 
   const last30 = daily.map((d) => ({ ...d, date: d.date.slice(5) }));
 
@@ -128,6 +129,52 @@ export default function AnalyticsPage() {
               <Bar dataKey="new_posts" name="Posts" fill="var(--accent)" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
+        )}
+      </div>
+
+      {/* Top encuestas */}
+      <div className="glass-card p-5">
+        <h2 className="text-sm font-semibold text-[color:var(--text-primary)] mb-4">Top encuestas por votos</h2>
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => <div key={i} className="skeleton h-10 w-full" />)}
+          </div>
+        ) : polls.length === 0 ? (
+          <p className="text-sm text-[color:var(--text-muted)] text-center py-6">Sin encuestas aún</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {polls.map((poll, i) => {
+              const max = Math.max(...polls.map((p) => p.votes), 1);
+              return (
+                <div key={poll.id} className="flex items-center gap-3">
+                  <span className="text-xs text-[color:var(--text-muted)] w-4 shrink-0 text-right">{i + 1}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <p className="text-xs text-[color:var(--text-secondary)] truncate">{poll.question}</p>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span
+                          className="text-[10px] px-1.5 py-0.5 rounded font-medium"
+                          style={{
+                            background: poll.active ? "var(--color-success)20" : "rgba(255,255,255,0.06)",
+                            color:      poll.active ? "var(--color-success)"   : "var(--text-muted)",
+                          }}
+                        >
+                          {poll.active ? "Activa" : "Cerrada"}
+                        </span>
+                        <span className="text-xs font-semibold text-[color:var(--text-primary)]">{poll.votes}</span>
+                      </div>
+                    </div>
+                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-700"
+                        style={{ width: `${Math.round((poll.votes / max) * 100)}%`, background: poll.active ? "var(--accent)" : "var(--text-muted)" }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
     </div>

@@ -58,9 +58,9 @@ export default function OverviewPage() {
       </div>
 
       {/* KPI grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
         {statsLoading ? (
-          Array.from({ length: 6 }).map((_, i) => <StatCardSkeleton key={i} />)
+          Array.from({ length: 8 }).map((_, i) => <StatCardSkeleton key={i} />)
         ) : (
           <>
             <StatCard label="Usuarios totales"  value={stats?.total_users ?? 0}        color="var(--accent)"        />
@@ -69,6 +69,8 @@ export default function OverviewPage() {
             <StatCard label="Posts hoy"         value={stats?.posts_today ?? 0}        color="var(--color-info)"    />
             <StatCard label="Baneados"          value={stats?.banned_users ?? 0}       color="var(--color-danger)"  />
             <StatCard label="Sesión promedio"   value={stats?.avg_session_minutes ? `${stats.avg_session_minutes}m` : "—"} color="var(--text-secondary)" sub="por usuario" />
+            <StatCard label="Encuestas activas" value={stats?.active_polls ?? 0}       color="var(--accent)"        sub="sin finalizar" />
+            <StatCard label="Votos totales"     value={stats?.total_votes ?? 0}        color="var(--accent-gold)"   sub="en encuestas" />
           </>
         )}
       </div>

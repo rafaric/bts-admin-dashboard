@@ -10,10 +10,15 @@ export async function GET() {
   const db = createSupabaseAdmin();
   const since = new Date(Date.now() - 30 * 86_400_000).toISOString();
 
-  const [postsRaw, usersRaw, likesRaw] = await Promise.all([
+  const [postsRaw, usersRaw, likesRaw, pollsRaw] = await Promise.all([
     db.from("posts").select("created_at, bts_members, era").gte("created_at", since),
     db.from("profiles").select("created_at").gte("created_at", since),
     db.from("likes").select("created_at").gte("created_at", since),
+    db.from("posts")
+      .select("id, content, poll, poll_votes(count)")
+      .not("poll", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(10),
   ]);
 
   // Build daily metrics map
@@ -63,9 +68,18 @@ export async function GET() {
     }
   });
 
+  const polls = (pollsRaw.data ?? []).map((p: { id: string; content: string; poll: { question: string; ends_at: string }; poll_votes: { count: number }[] }) => ({
+    id:       p.id,
+    question: p.poll?.question ?? p.content.slice(0, 60),
+    ends_at:  p.poll?.ends_at ?? null,
+    votes:    Array.isArray(p.poll_votes) ? (p.poll_votes[0]?.count ?? 0) : 0,
+    active:   p.poll?.ends_at ? new Date(p.poll.ends_at) > new Date() : false,
+  })).sort((a: { votes: number }, b: { votes: number }) => b.votes - a.votes);
+
   return NextResponse.json({
     daily,
     members: Array.from(memberMap.entries()).map(([member, posts]) => ({ member, posts })),
     eras:    Array.from(eraMap.entries()).map(([era, posts]) => ({ era, posts })),
+    polls,
   });
 }
