@@ -3,15 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useAuthStore } from "@/store/useAuthStore";
-import { MOCK_USERS } from "@/lib/mock-data";
+import { useUsers, useBanUser, useDeleteUser } from "@/hooks/useAdminData";
 import type { AdminUser } from "@/types";
 
 function UserRow({
-  user,
-  onBan,
-  onUnban,
-  onDelete,
-  isDemo,
+  user, onBan, onUnban, onDelete, isDemo,
 }: {
   user: AdminUser;
   onBan: (id: string) => void;
@@ -19,13 +15,9 @@ function UserRow({
   onDelete: (id: string) => void;
   isDemo: boolean;
 }) {
-  const joinDate = new Date(user.created_at).toLocaleDateString("es-AR", {
-    day: "2-digit", month: "short", year: "numeric",
-  });
+  const joinDate = new Date(user.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" });
   const lastSeen = user.last_sign_in_at
-    ? new Date(user.last_sign_in_at).toLocaleDateString("es-AR", {
-        day: "2-digit", month: "short",
-      })
+    ? new Date(user.last_sign_in_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short" })
     : "—";
 
   return (
@@ -58,7 +50,7 @@ function UserRow({
               onClick={() => !isDemo && onUnban(user.id)}
               disabled={isDemo}
               className="btn-ghost text-xs py-1 px-3 disabled:opacity-40"
-              title={isDemo ? "Iniciá sesión para realizar acciones" : "Desbanear"}
+              title={isDemo ? "Iniciá sesión para moderar" : undefined}
             >
               Desbanear
             </button>
@@ -67,7 +59,7 @@ function UserRow({
               onClick={() => !isDemo && onBan(user.id)}
               disabled={isDemo}
               className="btn-danger text-xs py-1 px-3 disabled:opacity-40"
-              title={isDemo ? "Iniciá sesión para realizar acciones" : "Banear"}
+              title={isDemo ? "Iniciá sesión para moderar" : undefined}
             >
               Banear
             </button>
@@ -76,7 +68,6 @@ function UserRow({
             onClick={() => !isDemo && onDelete(user.id)}
             disabled={isDemo}
             className="text-xs text-[color:var(--color-danger)] hover:underline disabled:opacity-40"
-            title={isDemo ? "Iniciá sesión para realizar acciones" : "Eliminar usuario"}
           >
             Eliminar
           </button>
@@ -90,11 +81,14 @@ export default function UsersPage() {
   const { session } = useAuthStore();
   const isDemo = !session;
 
-  const [users, setUsers]   = useState<AdminUser[]>(MOCK_USERS);
+  const { data: users = [], isLoading } = useUsers();
+  const banMutation    = useBanUser();
+  const deleteMutation = useDeleteUser();
+
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "banned">("all");
 
-  const filtered = users.filter((u) => {
+  const filtered = users.filter((u: AdminUser) => {
     const matchSearch = u.username.toLowerCase().includes(search.toLowerCase())
       || (u.email ?? "").toLowerCase().includes(search.toLowerCase());
     const matchFilter =
@@ -104,38 +98,18 @@ export default function UsersPage() {
     return matchSearch && matchFilter;
   });
 
-  function handleBan(id: string) {
-    setUsers((prev) => prev.map((u) => u.id === id ? { ...u, is_banned: true } : u));
-  }
-
-  function handleUnban(id: string) {
-    setUsers((prev) => prev.map((u) => u.id === id ? { ...u, is_banned: false } : u));
-  }
-
-  function handleDelete(id: string) {
-    if (!confirm("¿Eliminar este usuario permanentemente?")) return;
-    setUsers((prev) => prev.filter((u) => u.id !== id));
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-[color:var(--text-primary)]">Usuarios</h1>
           <p className="text-sm text-[color:var(--text-muted)] mt-0.5">
-            {isDemo
-              ? "Datos de muestra — las acciones están deshabilitadas"
-              : `${users.length} usuarios registrados`}
+            {isDemo ? "Datos de muestra — las acciones están deshabilitadas" : `${users.length} usuarios registrados`}
           </p>
         </div>
-        {isDemo && (
-          <a href="/login" className="btn-accent text-sm py-2 px-4">
-            Ingresar para moderar
-          </a>
-        )}
+        {isDemo && <a href="/login" className="btn-accent text-sm py-2 px-4">Ingresar para moderar</a>}
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-3">
         <input
           type="search"
@@ -151,9 +125,7 @@ export default function UsersPage() {
               key={f}
               onClick={() => setFilter(f)}
               className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                filter === f
-                  ? "bg-[color:var(--accent)] text-white"
-                  : "btn-ghost"
+                filter === f ? "bg-[color:var(--accent)] text-white" : "btn-ghost"
               }`}
             >
               {f === "all" ? "Todos" : f === "active" ? "Activos" : "Baneados"}
@@ -162,7 +134,6 @@ export default function UsersPage() {
         </div>
       </div>
 
-      {/* Table */}
       <div className="glass-card overflow-x-auto">
         <table className="army-table">
           <thead>
@@ -176,21 +147,32 @@ export default function UsersPage() {
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 ? (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i}>
+                  {Array.from({ length: 6 }).map((_, j) => (
+                    <td key={j}><div className="skeleton h-4 w-full" /></td>
+                  ))}
+                </tr>
+              ))
+            ) : filtered.length === 0 ? (
               <tr>
                 <td colSpan={6} className="text-center py-8 text-[color:var(--text-muted)]">
                   No se encontraron usuarios
                 </td>
               </tr>
             ) : (
-              filtered.map((u) => (
+              filtered.map((u: AdminUser) => (
                 <UserRow
                   key={u.id}
                   user={u}
-                  onBan={handleBan}
-                  onUnban={handleUnban}
-                  onDelete={handleDelete}
                   isDemo={isDemo}
+                  onBan={(id) => banMutation.mutate({ id, action: "ban" })}
+                  onUnban={(id) => banMutation.mutate({ id, action: "unban" })}
+                  onDelete={(id) => {
+                    if (!confirm("¿Eliminar este usuario permanentemente?")) return;
+                    deleteMutation.mutate(id);
+                  }}
                 />
               ))
             )}

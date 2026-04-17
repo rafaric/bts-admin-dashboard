@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useAuthStore } from "@/store/useAuthStore";
-import { MOCK_POSTS } from "@/lib/mock-data";
+import { usePosts, useDeletePost } from "@/hooks/useAdminData";
 import { BTS_MEMBERS, BTS_ERAS, MEMBER_COLORS, type BtsMember } from "@/lib/constants";
 import type { Post } from "@/types";
 
@@ -11,23 +11,20 @@ export default function ContentPage() {
   const { session } = useAuthStore();
   const isDemo = !session;
 
-  const [posts, setPosts]         = useState<Post[]>(MOCK_POSTS);
-  const [search, setSearch]       = useState("");
-  const [memberFilter, setMemberFilter] = useState<string>("all");
-  const [eraFilter, setEraFilter] = useState<string>("all");
+  const { data: posts = [], isLoading } = usePosts();
+  const deleteMutation = useDeletePost();
 
-  const filtered = posts.filter((p) => {
+  const [search, setSearch]       = useState("");
+  const [memberFilter, setMemberFilter] = useState("all");
+  const [eraFilter, setEraFilter] = useState("all");
+
+  const filtered = (posts as Post[]).filter((p) => {
     const matchSearch = p.content.toLowerCase().includes(search.toLowerCase())
       || (p.author?.username ?? "").toLowerCase().includes(search.toLowerCase());
-    const matchMember = memberFilter === "all" || p.tagged_members.includes(memberFilter);
+    const matchMember = memberFilter === "all" || (p.tagged_members ?? []).includes(memberFilter);
     const matchEra    = eraFilter    === "all" || p.era === eraFilter;
     return matchSearch && matchMember && matchEra;
   });
-
-  function handleDelete(id: string) {
-    if (!confirm("¿Eliminar este post permanentemente?")) return;
-    setPosts((prev) => prev.filter((p) => p.id !== id));
-  }
 
   return (
     <div className="space-y-6">
@@ -38,14 +35,9 @@ export default function ContentPage() {
             {isDemo ? "Datos de muestra" : `${posts.length} posts publicados`}
           </p>
         </div>
-        {isDemo && (
-          <a href="/login" className="btn-accent text-sm py-2 px-4">
-            Ingresar para moderar
-          </a>
-        )}
+        {isDemo && <a href="/login" className="btn-accent text-sm py-2 px-4">Ingresar para moderar</a>}
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-3">
         <input
           type="search"
@@ -55,7 +47,6 @@ export default function ContentPage() {
           className="army-input px-4 py-2 text-sm flex-1 min-w-48"
           aria-label="Buscar post"
         />
-
         <select
           value={memberFilter}
           onChange={(e) => setMemberFilter(e.target.value)}
@@ -65,7 +56,6 @@ export default function ContentPage() {
           <option value="all">Todos los miembros</option>
           {BTS_MEMBERS.map((m) => <option key={m} value={m}>{m}</option>)}
         </select>
-
         <select
           value={eraFilter}
           onChange={(e) => setEraFilter(e.target.value)}
@@ -77,9 +67,21 @@ export default function ContentPage() {
         </select>
       </div>
 
-      {/* Post cards */}
       <div className="grid gap-4">
-        {filtered.length === 0 ? (
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="glass-card p-4">
+              <div className="flex gap-3">
+                <div className="skeleton w-9 h-9 rounded-full shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="skeleton h-3 w-32" />
+                  <div className="skeleton h-4 w-full" />
+                  <div className="skeleton h-4 w-3/4" />
+                </div>
+              </div>
+            </div>
+          ))
+        ) : filtered.length === 0 ? (
           <div className="glass-card p-8 text-center text-[color:var(--text-muted)]">
             No se encontraron posts
           </div>
@@ -90,13 +92,7 @@ export default function ContentPage() {
                 <div className="flex items-start gap-3 flex-1 min-w-0">
                   <div className="relative w-9 h-9 rounded-full overflow-hidden shrink-0 bg-[color:var(--bg-surface)]">
                     {post.author?.avatar_url && (
-                      <Image
-                        src={post.author.avatar_url}
-                        alt={post.author.username ?? ""}
-                        fill
-                        className="object-cover"
-                        sizes="36px"
-                      />
+                      <Image src={post.author.avatar_url} alt={post.author.username ?? ""} fill className="object-cover" sizes="36px" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -104,41 +100,38 @@ export default function ContentPage() {
                       <span className="text-sm font-medium text-[color:var(--text-primary)]">
                         @{post.author?.username}
                       </span>
-                      {post.era && (
-                        <span className="badge badge-info">{post.era}</span>
-                      )}
-                      {post.tagged_members.map((m) => (
+                      {post.era && <span className="badge badge-info">{post.era}</span>}
+                      {(post.tagged_members ?? []).map((m) => (
                         <span
                           key={m}
                           className="badge"
                           style={{
-                            background: `${MEMBER_COLORS[m as BtsMember]}22`,
-                            color: MEMBER_COLORS[m as BtsMember],
+                            background: `${MEMBER_COLORS[m as BtsMember] ?? "var(--accent)"}22`,
+                            color: MEMBER_COLORS[m as BtsMember] ?? "var(--accent)",
                           }}
                         >
                           {m}
                         </span>
                       ))}
                     </div>
-                    <p className="text-sm text-[color:var(--text-secondary)] mt-1 line-clamp-3">
-                      {post.content}
-                    </p>
+                    <p className="text-sm text-[color:var(--text-secondary)] mt-1 line-clamp-3">{post.content}</p>
                     <div className="flex items-center gap-4 mt-2 text-xs text-[color:var(--text-muted)]">
                       <span>
-                        {new Date(post.created_at).toLocaleDateString("es-AR", {
-                          day: "2-digit", month: "short", year: "numeric",
-                        })}
+                        {new Date(post.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })}
                       </span>
                       <span>💜 {post.likes_count ?? 0}</span>
                     </div>
                   </div>
                 </div>
-
                 <button
-                  onClick={() => !isDemo && handleDelete(post.id)}
+                  onClick={() => {
+                    if (isDemo) return;
+                    if (!confirm("¿Eliminar este post permanentemente?")) return;
+                    deleteMutation.mutate(post.id);
+                  }}
                   disabled={isDemo}
                   className="btn-danger text-xs py-1 px-3 shrink-0 disabled:opacity-40"
-                  title={isDemo ? "Iniciá sesión para moderar" : "Eliminar post"}
+                  title={isDemo ? "Iniciá sesión para moderar" : undefined}
                 >
                   Eliminar
                 </button>
