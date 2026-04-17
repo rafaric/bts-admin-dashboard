@@ -13,7 +13,7 @@ export async function GET() {
     db.from("posts").select("id", { count: "exact", head: true }),
     db.from("profiles").select("id", { count: "exact", head: true }).eq("is_banned", true),
     db.from("posts")
-      .select("user_id", { count: "exact", head: true })
+      .select("author", { count: "exact", head: true })
       .gte("created_at", new Date(Date.now() - 86_400_000).toISOString()),
     db.from("posts")
       .select("id", { count: "exact", head: true })
