@@ -33,7 +33,7 @@ export async function GET() {
   ]);
 
   const cards = (byRarity ?? []).reduce<Record<string, number>>((acc, row) => {
-    const rarity = (row.cards as { rarity: string } | null)?.rarity;
+    const rarity = (row.cards as unknown as { rarity: string } | null)?.rarity;
     if (rarity) acc[rarity] = (acc[rarity] ?? 0) + 1;
     return acc;
   }, {});
