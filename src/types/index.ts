@@ -91,3 +91,22 @@ export type OverviewStats = {
   active_polls: number;
   total_votes: number;
 };
+
+export type Card = {
+  id: string;
+  name: string;
+  member: string;
+  era: string;
+  rarity: "common" | "rare" | "epic" | "legendary";
+  image_url: string | null;
+};
+
+export type CollectiblesStats = {
+  packs: { total: number; opened: number; pending: number; simple: number; super: number };
+  cards: Record<string, number>;
+  recent: { created_at: string; pack_type: string; activity: string; user_name?: string }[];
+};
+
+export type GiftPackResult = {
+  pack: { id: string; pack_type: string; activity: string };
+};

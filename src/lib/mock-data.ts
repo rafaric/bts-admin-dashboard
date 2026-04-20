@@ -7,6 +7,8 @@ import type {
   EraStat,
   PollStat,
   OverviewStats,
+  Card,
+  CollectiblesStats,
 } from "@/types";
 import { MEMBER_COLORS } from "./constants";
 
@@ -111,3 +113,26 @@ export const MOCK_OVERVIEW: OverviewStats = {
   active_polls:         4,
   total_votes:          87,
 };
+
+/* ── Collectibles ───────────────────────────────────────────────────────────── */
+export const MOCK_COLLECTIBLES_STATS: CollectiblesStats = {
+  packs: { total: 142, opened: 98, pending: 44, simple: 110, super: 32 },
+  cards: { common: 210, rare: 88, epic: 34, legendary: 8 },
+  recent: [
+    { created_at: "2026-04-20T18:30:00Z", pack_type: "super",  activity: "post",         user_name: "Valentina Kim"  },
+    { created_at: "2026-04-20T17:45:00Z", pack_type: "simple", activity: "like",         user_name: "Camila Yoon"    },
+    { created_at: "2026-04-20T16:20:00Z", pack_type: "simple", activity: "comment",      user_name: "Lucía Han"      },
+    { created_at: "2026-04-20T14:00:00Z", pack_type: "super",  activity: "login_streak", user_name: "Isabella Jeon"  },
+    { created_at: "2026-04-20T12:30:00Z", pack_type: "simple", activity: "like",         user_name: "Mariana Choi"   },
+  ],
+};
+
+export const MOCK_CARDS: Card[] = [
+  { id: "c1",  name: "RM — Arirang 01",     member: "RM",       era: "arirang",      rarity: "common",    image_url: null },
+  { id: "c2",  name: "Jin — Wings 06",      member: "Jin",      era: "wings",        rarity: "rare",      image_url: null },
+  { id: "c3",  name: "Suga — HYYH 08",      member: "Suga",     era: "hyyh",         rarity: "epic",      image_url: null },
+  { id: "c4",  name: "J-Hope — Butter 10",  member: "J-Hope",   era: "butter",       rarity: "legendary", image_url: null },
+  { id: "c5",  name: "Jimin — LY 03",       member: "Jimin",    era: "love_yourself", rarity: "common",   image_url: null },
+  { id: "c6",  name: "V — MOTS 07",         member: "V",        era: "mots",         rarity: "rare",      image_url: null },
+  { id: "c7",  name: "Jungkook — Proof 09", member: "Jungkook", era: "proof",        rarity: "epic",      image_url: null },
+];
