@@ -42,7 +42,7 @@ export async function GET() {
     created_at: r.created_at,
     pack_type:  r.pack_type,
     activity:   r.activity,
-    user_name:  (r.profiles as { name: string } | null)?.name ?? "—",
+    user_name:  (r.profiles as unknown as { name: string } | null)?.name ?? "—",
   }));
 
   return NextResponse.json({
